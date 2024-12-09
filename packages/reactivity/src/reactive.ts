@@ -1,4 +1,4 @@
-import { isObject } from "../shared";
+import { isObject } from "@vue/shared";
 import { baseHandlers } from "./baseHandlers";
 
 const reactiveMap = new WeakMap();

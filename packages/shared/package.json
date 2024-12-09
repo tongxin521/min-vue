@@ -1,12 +1,18 @@
 {
   "name": "@vue/shared",
   "version": "1.0.0",
-  "description": "",
+  "description": "@vue/shared",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "module": "dist/shared.esm-bundler.js",
+  "unpkg": "dist/shared.js",
+  "buildOptions": {
+    "name": "VueReactivity",
+    "formats": [
+      "esm-bundler",
+      "esm-browser",
+      "cjs",
+      "global"
+    ]
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": ["vue"]
 }

@@ -1,4 +1,4 @@
-import { isObject } from '../shared';
+import { isObject } from '../../shared/src';
 import { reactive } from './reactive';
 import { track, trigger } from './reactiveEffect';
 export const baseHandlers = {
