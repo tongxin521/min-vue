@@ -19,7 +19,6 @@ const {values, positionals} = parseArgs({
 
 // 获取文件的绝对路径
 const __dirname = dirname(fileURLToPath(import.meta.url))
-console.log(values, 'values');
 const outputFormat = values.format === 'global' ? 'iife' : values.format;
 
 const target = positionals[0] || 'reactivity';
@@ -32,17 +31,14 @@ const outfile = resolve(
 
 const pkg = require(resolve(__dirname, `../packages/${target}/package.json`));
 
-console.log(outfile, outputFormat);
-
 esbuild.context({
-    entryPoints: [enter],
-    outfile,
-    format: outputFormat,
-    bundle: true,
+    entryPoints: [enter], // 入口文件
+    outfile, // 输出文件
+    format: outputFormat, // 输出格式
+    bundle: true, // reactivity -> shared  会打包到一起
     platform: "browser", // 打包后给浏览器使用
-    sourcemap: true,
-    external: ['vue'],
-    globalName: pkg.buildOptions?.name,
+    sourcemap: true,    // 生成sourcemap
+    globalName: pkg.buildOptions?.name, // 打包后的全局变量
 })
 .then((ctx) => {
    return ctx.watch();
