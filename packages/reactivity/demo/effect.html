@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type="module">
+        // import {effect, reactive} from '/node_modules/.pnpm/@vue+reactivity@3.4.38/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
+        import {effect, reactive} from './../dist/reactivity.js'
+
+        const obj = {
+            count: 0,
+            age: 18,
+        }
+        const state = reactive(obj);
+        effect(() => {
+            console.log('count', state.count);
+            effect(() => {
+                console.log('count1', state.age);
+            });
+        })
+
+        
+
+        setTimeout(() => {
+            state.count++;
+        }, 1000);
+        setTimeout(() => {
+            state.count++;
+        }, 2000);
+        setTimeout(() => {
+            state.age++;
+        }, 1000);
+
+        setTimeout(() => {
+            state.age++;
+        }, 2000)
+    </script>
+</body>
+</html>

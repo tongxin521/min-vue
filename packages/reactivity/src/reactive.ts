@@ -18,6 +18,4 @@ export function reactive(obj) {
     reactiveMap.set(obj, proxy);
 
     return proxy;
-
-
 }
