@@ -3,7 +3,7 @@ import { DirtyLevels } from "./constants";
 
 export let activeEffect;
 export function effect(fn, options) {
-    const _errect = new reactiveEffect(fn, NOOP, () => {
+    const _errect = new ReactiveEffect(fn, NOOP, () => {
         _errect.run();
     });
 
@@ -18,7 +18,7 @@ export function effect(fn, options) {
 }
 
 
-export class reactiveEffect {
+export class ReactiveEffect {
     active = true; // 是否激活
     deps = []; // 依赖
     _dirtyLevel = DirtyLevels.Dirty; // 脏值级别
@@ -71,7 +71,7 @@ function postCleanEffect(effct) {
     if (effct.deps.length > effct._depsLength) {
         for (let i = effct._depsLength; i < effct.deps.length; i++) {
             cleanupDepEffect(effct.deps[i], effct);
-            effct._depsLength = effct.deps.length;
+            effct.deps.length = effct._depsLength;
         }
     }
 }

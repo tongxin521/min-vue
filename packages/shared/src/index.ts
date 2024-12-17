@@ -5,3 +5,8 @@ export function isObject(value) {
 export const extend = Object.assign
 
 export function NOOP () {}
+
+
+export function isFunction (value) {
+    return typeof value === 'function'
+}

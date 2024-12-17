@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type="module">
+        import {computed, effect, ref} from './../dist/reactivity.js';
+        // import {computed, effect, ref} from '/node_modules/vue/dist/vue.runtime.esm-browser.js';
+        const count = ref(0);
+
+        const product = computed({
+            get() {
+                return count.value * 2;
+            },
+            set(val) {
+                count.value = val;
+            }
+        })
+        effect(() => {
+            
+            console.log('product', product.value);
+        })
+
+        setTimeout(() => {
+            product.value = 1;
+        })
+    </script>
+</body>
+</html>
