@@ -25,7 +25,11 @@ importers:
         specifier: workspace:*
         version: link:../shared
 
-  packages/runtime-core: {}
+  packages/runtime-core:
+    dependencies:
+      '@vue/shared':
+        specifier: workspace:^
+        version: link:../shared
 
   packages/runtime-dom:
     dependencies:
@@ -33,7 +37,7 @@ importers:
         specifier: workspace:*
         version: link:../runtime-core
       '@vue/shared':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../shared
 
   packages/shared: {}

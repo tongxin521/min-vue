@@ -11,3 +11,8 @@ export function NOOP () {}
 export function isFunction (value) {
     return typeof value === 'function'
 }
+
+
+export function isArray (value) {
+    return Array.isArray(value)
+}
