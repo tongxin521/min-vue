@@ -1,4 +1,5 @@
 import { isArray, isObject } from "@vue/shared";
+import { createVNode, isVNode } from "./vnode";
 /**
  * h 可以寄接受 1 ～ Infinity 个参数
  * 2 个参数时，第一个参数是类型，第二个参数是 props 或者 children
