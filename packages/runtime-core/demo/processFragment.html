@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+        import {h, createRenderer, Fragment} from './../dist/runtime-core.js';
+        import {rendererOptions} from '/packages/runtime-dom/dist/runtime-dom.js'
+        const renderer = createRenderer(rendererOptions);
+        const render = renderer.render;
+        const vnode = h(Fragment, [
+            [h('div', {}, 'hello'),
+            h('div', {}, 'world')]
+        ])
+        render(vnode, app)
+    </script>
+</body>
+</html>

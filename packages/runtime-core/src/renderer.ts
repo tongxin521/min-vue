@@ -1,5 +1,5 @@
 import { ShapeFlags } from "packages/shared/src/shapeFlags";
-import { isSameNodeType, normalizeVNode, Text } from "./vnode";
+import { isSameNodeType, normalizeVNode, Text, Fragment } from "./vnode";
 import { EMPTY_OBJ } from "@vue/shared";
 
 export function createRenderer(option) {
@@ -48,7 +48,6 @@ export function createRenderer(option) {
      * 情况三：之前是数组子节点，现在是数组子节点，更新数组子节点
      * 情况四：之前是数组子节点，现在没有节点，卸载数组子节点
      * 情况五：之前是文本子节点，现在是数组子节点，卸载文本子节点，挂载数组子节点
-     * TODO: 最长递增子序列优化
      */
     const patchChildren = (n1, n2, container, anchor) => {
         const c1 = n1.children;
@@ -260,6 +259,15 @@ export function createRenderer(option) {
         }
     }
 
+    const processFragment = (n1, n2, container, anchor) => {
+        if (n1 == null) {
+            mountChildren(n2, container, anchor);
+        }
+        else {
+            patchChildren(n1, n2, container, anchor);
+        }
+    }
+
     const patch = (n1, n2, container, anchor = null) => {
         if (n1 === n2) {
             return;
@@ -273,6 +281,9 @@ export function createRenderer(option) {
         switch (type) {
             case Text:
                 processText(n1, n2, container, anchor);
+                break;
+            case Fragment:
+                processFragment(n1, n2, container, anchor);
                 break;
             default:
                 if (shapeFlag & ShapeFlags.ELEMENT) {

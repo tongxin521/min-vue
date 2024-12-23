@@ -18,6 +18,7 @@ vnode1 = [a, b, c , d]
 
 在这种情况下，需要将 n2 的子节点全部创建出来，再一一对比更新。实际情况下，我们只需要处理 a 和 d 就可以了。
 vue 源码中针对这种情况，使用了最长递增子序列（Longest Increasing Subsequence，简称 LIS）算法。来优化 diff 算法。
+<a href="https://zh.wikipedia.org/wiki/%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97"></a>
 核心思想： 找出最长递增子序列，然后根据这个最长递增子序列来更新节点。
 
 

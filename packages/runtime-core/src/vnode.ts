@@ -2,6 +2,7 @@ import { isArray, isObject, isString } from "@vue/shared"
 import { ShapeFlags } from "packages/shared/src/shapeFlags"
 
 export const Text = Symbol.for('v-text');
+export const Fragment = Symbol.for('v-fgt')
 
 export function createVNode(type, props, children = null) {
     const shapeFlag = isString(type) ? ShapeFlags.ELEMENT : 0;
@@ -53,8 +54,18 @@ export function isSameNodeType(n1, n2) {
     return n1.type === n2.type && n1.key === n2.key;
 }
 
+/**
+ * 如果子节点 vnode ，直接返回
+ * 如果子节点是文本，则转为 Text vnode 返回
+ * 如果子节点是数组，则转为 Fragment vnode 返回
+ * @param child 
+ * @returns 
+ */
 export function normalizeVNode(child) {
-    if (isObject(child)) {
+    if (isArray(child)) {
+        return createVNode(Fragment, null, child);
+    }
+    else if (isObject(child)) {
         if (isVNode(child)) {
             return child;
         }
