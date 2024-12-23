@@ -21,3 +21,5 @@ export function isArray (value) {
 export function isString (value) {
     return typeof value === 'string'
 }
+
+export const EMPTY_OBJ = Object.freeze({});

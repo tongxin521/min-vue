@@ -1,5 +1,7 @@
-import { isArray, isString } from "@vue/shared"
+import { isArray, isObject, isString } from "@vue/shared"
 import { ShapeFlags } from "packages/shared/src/shapeFlags"
+
+export const Text = Symbol.for('v-text');
 
 export function createVNode(type, props, children = null) {
     const shapeFlag = isString(type) ? ShapeFlags.ELEMENT : 0;
@@ -42,7 +44,24 @@ function normalizeChildren(vnode, children) {
     else {
         type = ShapeFlags.TEXT_CHILDREN;
         children = String(children);
-        vnode.children = children;
-        vnode.shapeFlag |= type;
     }
+    vnode.children = children;
+        vnode.shapeFlag |= type;
+}
+
+export function isSameNodeType(n1, n2) {
+    return n1.type === n2.type && n1.key === n2.key;
+}
+
+export function normalizeVNode(child) {
+    if (isObject(child)) {
+        if (isVNode(child)) {
+            return child;
+        }
+        return child;
+    }
+    else {
+        return createVNode(Text, null, String(child));
+    }
+    
 }
