@@ -1,4 +1,5 @@
 export * from './general';
+export * from './shapeFlags';
 export function isObject(value) {
     return value !== null && typeof value === 'object'
 }
@@ -23,3 +24,7 @@ export function isString (value) {
 }
 
 export const EMPTY_OBJ = Object.freeze({});
+
+export function hasOwn(val, key) {
+    return Object.prototype.hasOwnProperty.call(val, key)
+}

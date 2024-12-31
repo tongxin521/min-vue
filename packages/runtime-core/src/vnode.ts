@@ -5,7 +5,11 @@ export const Text = Symbol.for('v-text');
 export const Fragment = Symbol.for('v-fgt')
 
 export function createVNode(type, props, children = null) {
-    const shapeFlag = isString(type) ? ShapeFlags.ELEMENT : 0;
+    const shapeFlag = isString(type)
+        ? ShapeFlags.ELEMENT
+        : isObject(type)
+        ? ShapeFlags.STATEFUL_COMPONENT
+        : 0;
     const vnode = {
         // 标记为vnode
         __v_isVNode: true,
@@ -20,6 +24,8 @@ export function createVNode(type, props, children = null) {
         // 元素
         el: null,
         shapeFlag,
+        // 组件实例
+        component: null,
     }
 
     normalizeChildren(vnode, children);
