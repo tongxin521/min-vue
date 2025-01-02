@@ -12,7 +12,7 @@ const normalizeVNodeSlots = (instance, children) => {
 };
 
 const normalizeSlot = (key, rawSlot) => {
-    const normalized = normalizeSlotValue(rawSlot())
+    const normalized = (...args) => normalizeSlotValue(rawSlot(...args));
     return normalized;
 }
 
@@ -22,7 +22,7 @@ const normalizeObjectSlots = (rawSlots, slots, instance) => {
         const value = rawSlots[key];
 
         if (isFunction(value)) {
-            slots[key] = () => normalizeSlot(key, value);
+            slots[key] = normalizeSlot(key, value);
         }
         else if (value != null) {
             const normalized = normalizeSlotValue(value);
