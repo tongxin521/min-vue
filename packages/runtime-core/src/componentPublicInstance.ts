@@ -3,7 +3,9 @@ import { extend, hasOwn } from "@vue/shared";
 export const publicPropertiesMap = extend({}, {
     $: (i) => i,
     $data: (i) => i.data,
-    $props: (i) => i.props
+    $props: (i) => i.props,
+    $attrs: (i) => i.attrs,
+    $slots: (i) => i.slots,
 })
 
 export const PublicInstanceProxyHandlers = {

@@ -48,6 +48,19 @@ function normalizeChildren(vnode, children) {
     else if (isArray(children)) {
         type = ShapeFlags.ARRAY_CHILDREN;
     }
+    else if (typeof children === 'object') {
+       if (shapeFlag & ShapeFlags.ELEMENT) {
+        const slot = children.default;
+        
+        if (slot) {
+            normalizeChildren(vnode, slot());
+        }
+        return;
+       }
+       else {
+        type = ShapeFlags.SLOTS_CHILDREN;
+       }
+    }
     else {
         type = ShapeFlags.TEXT_CHILDREN;
         children = String(children);

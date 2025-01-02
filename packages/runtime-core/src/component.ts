@@ -3,6 +3,7 @@ import { initProps, normalizePropsOptions } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { reactive } from "@vue/reactivity";
 import { createAppContext } from "./apiCreateApp";
+import { initSlots } from "./componentSlots";
 
 const emptyAppContext = createAppContext()
 let uid = 0;
@@ -25,6 +26,9 @@ export function createComponentInstance(vnode) {
         // 组件上下文（当前组件实例）
         ctx: EMPTY_OBJ,
         data: EMPTY_OBJ,
+        props: EMPTY_OBJ,
+        attrs: EMPTY_OBJ,
+        slots: EMPTY_OBJ,
     }
 
     instance.ctx = {_: instance};
@@ -38,6 +42,7 @@ export function setupComponent(instance) {
     const isStateful = isStatefulComponent(instance)
 
     initProps(instance, props, isStateful);
+    initSlots(instance, children);
 
     const setupResult = isStateful ? setupStatefulComponent(instance) : undefined;
 

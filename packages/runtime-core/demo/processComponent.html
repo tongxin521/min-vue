@@ -22,11 +22,14 @@
                 }
             },
             render() {
-                return h('div', {}, this.msg)
+                const defaultSlot = this.$slots.default() || this.msg;
+                return h('div', {}, defaultSlot)
             }
         }
         
-        render(h(Com, {count: 123, msg: 'hello word'}), app)
+        render(h(Com, {count: 123, msg: 'hello word'}, {
+            default: () => 'default slot'
+        }), app)
     </script>
 </body>
 </html>
