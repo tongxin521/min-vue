@@ -40,7 +40,7 @@ export function isVNode(vnode) {
 
 
 function normalizeChildren(vnode, children) {
-    let type= null;
+    let type = 0;
     const {shapeFlag} = vnode;
     if (children == null) {
         children = null;

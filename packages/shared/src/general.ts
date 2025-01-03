@@ -15,3 +15,9 @@ export const isReservedProp = /*#__PURE__*/ makeMap(
   )
 
 export const NO = () => false;
+
+export function invokeArrayFns(fns, ...args) {
+  for (let i = 0; i < fns.length; i++) {
+    fns[i](...args);
+  }
+}

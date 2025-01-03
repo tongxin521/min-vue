@@ -22,16 +22,73 @@
                     // msg: 'Hello Vue!'
                 }
             },
+            beforeCreate: [
+                function () {
+                    console.log('beforeCreate Com');
+                },
+                function () {
+                    console.log('beforeCreate Com');
+                }
+            ],
+            created: [
+                function () {
+                    console.log('created Com');
+                },
+                function () {
+                    console.log('created Com');
+                }
+            ],
+            beforeMount: [
+                function () {
+                    console.log('beforeMount');
+                },
+                function () {
+                    console.log('beforeMount');
+                }
+            ],
+            mounted() {
+                console.log('mounted');
+            },
             render() {
-                const header = this.$slots.header(123);
                 const defaultSlot = this.$slots.default() || this.msg;
-                return h('div', {}, [defaultSlot, header])
+                return h('div', {}, [
+                    '父组件',
+                    defaultSlot,
+                    h(Com1)
+                ])
+            }
+        }
+
+        const Com1 = {
+            beforeCreate: [
+                function () {
+                    console.log('beforeCreate Com1');
+                },
+                function () {
+                    console.log('beforeCreate Com1');
+                }
+            ],
+            created: [
+                function () {
+                    console.log('created Com1');
+                },
+                function () {
+                    console.log('created Com1');
+                }
+            ],
+            beforeMount() {
+                console.log('beforeMount Com1');
+            },
+            mounted() {
+                console.log('mounted Com1');
+            },
+            render() {
+                return h('div', 'Com1')
             }
         }
         
         render(h(Com, {count: 123, msg: 'hello word'}, {
-            default: ['default slot', 123],
-            header: (props) => `header slot ${props}`
+            default: () => 'default slot',
         }), app)
     </script>
 </body>

@@ -1,6 +1,6 @@
 import { ShapeFlags } from "packages/shared/src/shapeFlags";
 import { isSameNodeType, normalizeVNode, Text, Fragment } from "./vnode";
-import { EMPTY_OBJ, NOOP } from "@vue/shared";
+import { EMPTY_OBJ, NOOP, invokeArrayFns } from "@vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
 import { ReactiveEffect } from "@vue/reactivity";
 import { renderComponentRoot } from "./componentRenderUtils";
@@ -273,13 +273,28 @@ export function createRenderer(option) {
 
     const setupRenderEffect = (instance, initialVNode, container, anchor) => {
         const componentUpdateFn = () => {
-            const {el, props} = instance;
+            if (!instance.isMounted) {
+                const {el, props} = initialVNode;
 
-            const subTree = (instance.subTree = renderComponentRoot(instance));
+                const {bm, m} = instance;
 
-            patch(null, subTree, container, anchor)
+                const subTree = (instance.subTree = renderComponentRoot(instance));
 
-            instance.isMounted = true;
+                if (bm) {
+                    invokeArrayFns(bm);
+                }
+
+                patch(null, subTree, container, anchor)
+
+                initialVNode.el = subTree.el;
+
+                if (m) {
+                    invokeArrayFns(m);
+                }
+
+                instance.isMounted = true;
+            }
+            
 
         }
         const updata = (instance.update = () => {
@@ -344,6 +359,7 @@ export function createRenderer(option) {
 
     }
     const render = (vnode, container) => {
+
         if (vnode == null) {
             if (container._vnode) {
                 unmount(container._vnode);
