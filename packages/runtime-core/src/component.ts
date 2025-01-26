@@ -10,9 +10,9 @@ import { emit, normalizeEmitsOptions } from "./componentEmits";
 const emptyAppContext = createAppContext()
 let uid = 0;
 export let currentInstance = null;
-export function createComponentInstance(vnode) {
+export function createComponentInstance(vnode, parent) {
     const type = vnode.type;
-    const appContext = emptyAppContext;
+    const appContext = (parent ? parent.appContext : vnode.appContext) || emptyAppContext;
 
     const instance = {
         // 唯一标识
@@ -26,6 +26,9 @@ export function createComponentInstance(vnode) {
         proxy: null,
         // 组件暴露的属性，可以被其他组件引用
         exposed: null,
+
+        provides: parent ? parent.provides : Object.create(appContext.provides),
+
         // 自定义 props
         propsOptions: normalizePropsOptions(type, appContext),
         emitsOptions: normalizeEmitsOptions(type, appContext),

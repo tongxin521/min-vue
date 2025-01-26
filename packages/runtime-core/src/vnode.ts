@@ -1,5 +1,6 @@
 import { isArray, isFunction, isObject, isString } from "@vue/shared"
 import { ShapeFlags } from "packages/shared/src/shapeFlags"
+import { currentRenderingInstance } from "./componentRenderContext";
 
 export const Text = Symbol.for('v-text');
 export const Fragment = Symbol.for('v-fgt')
@@ -28,6 +29,8 @@ export function createVNode(type, props, children = null) {
         shapeFlag,
         // 组件实例
         component: null,
+        // 当前渲染的组件实例
+        ctx: currentRenderingInstance,
     }
 
     normalizeChildren(vnode, children);
@@ -62,6 +65,13 @@ function normalizeChildren(vnode, children) {
        else {
         type = ShapeFlags.SLOTS_CHILDREN;
        }
+    }
+    else if (isFunction(children)) {
+        children = {
+            default: children,
+            _ctx: currentRenderingInstance,
+        };
+        type = ShapeFlags.SLOTS_CHILDREN;
     }
     else {
         type = ShapeFlags.TEXT_CHILDREN;

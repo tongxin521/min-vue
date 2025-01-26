@@ -8,15 +8,15 @@
 <body>
     <div id="app"></div>
     <script type="module">
-        // import {render, h,
-        //     onBeforeMount, onMounted, onBeforeUpdate,
-        //     onUpdated, onBeforeUnmount, onUnmounted
-        // } from './../dist/runtime-dom.js';
-
         import {render, h,
             onBeforeMount, onMounted, onBeforeUpdate,
             onUpdated, onBeforeUnmount, onUnmounted
-        } from '/node_modules/vue/dist/vue.runtime.esm-browser.js';
+        } from './../dist/runtime-dom.js';
+
+        // import {render, h,
+        //     onBeforeMount, onMounted, onBeforeUpdate,
+        //     onUpdated, onBeforeUnmount, onUnmounted
+        // } from '/node_modules/vue/dist/vue.runtime.esm-browser.js';
 
         function App(props, {emit, attrs, slots}) {
             return h('div', {}, 'Hello, world!');

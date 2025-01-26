@@ -10,6 +10,8 @@ import {
     onUpdated,
     onBeforeUnmount,
     onUnmounted,
+    provide,
+    inject,
 } from "@vue/runtime-core";
 
 export {
@@ -19,6 +21,8 @@ export {
     onUpdated,
     onBeforeUnmount,
     onUnmounted,
+    provide,
+    inject,
 }
 
 export {ref, reactive} from '@vue/reactivity'

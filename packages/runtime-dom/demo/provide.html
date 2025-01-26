@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+
+        // import {render, h, provide, inject, 
+        // } from '/node_modules/vue/dist/vue.esm-browser.js';
+
+        import {render, h, provide, inject, 
+        } from '/node_modules/vue/dist/vue.esm-browser.js';
+
+        const App = {
+            setup() {
+                provide('user', 'John Doe');
+                return () => h('div', ['Hello, ', h(Com)]);
+            },
+        }
+
+        const Com = {
+            setup() {
+                const user = inject('user');
+                return () => h('div', user);
+            }
+        }
+        render(h(App), app);
+    </script>
+</body>
+</html>
