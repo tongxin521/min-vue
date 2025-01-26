@@ -350,6 +350,7 @@ export function createRenderer(option) {
 
                 patch(prevTree, nextTree, hostParentNode(vnode.el), getNextHostNode(prevTree))
 
+                next.el = nextTree.el
 
                 if (u) {
                     invokeArrayFns(u);

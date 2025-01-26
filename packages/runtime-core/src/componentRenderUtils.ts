@@ -1,19 +1,26 @@
 import { ShapeFlags } from "@vue/shared";
 import { normalizeVNode } from "./vnode";
 import { isEmitListener } from "./componentEmits";
+import { setCurrentRenderingInstance } from "./componentRenderContext";
 
 export function renderComponentRoot(instance) {
-    const {vnode, proxy, type} = instance;
+    const {vnode, proxy, type, props, slots, attrs, emit} = instance;
+    const prev = setCurrentRenderingInstance(instance)
 
     let result;
     try {
         if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
             result = normalizeVNode(type.render.call(proxy));
-            
+        }
+        else {
+            const render = type;
+
+            result = normalizeVNode(render(props, { attrs, slots, emit }));
         }
     } catch (error) {
         
     }
+    setCurrentRenderingInstance(prev);
     return result;
 }
 

@@ -16,6 +16,15 @@ export function initProps(instance, rawProps, isStateful) {
     if (isStateful) {
         instance.props = shallowReactive(props);
     }
+    else {
+        if (!instance.type.props) {
+            instance.props = attrs;
+        }
+        else {
+            instance.props = props;
+        }
+    }
+
 
     instance.attrs = attrs;
 
