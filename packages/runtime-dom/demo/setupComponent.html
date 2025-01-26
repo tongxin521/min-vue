@@ -8,14 +8,38 @@
 <body>
     <div id="app"></div>
     <script type="module">
-        import {render, h} from './../dist/runtime-dom.js';
+        import {render, h,
+            onBeforeMount, onMounted, onBeforeUpdate,
+            onUpdated, onBeforeUnmount, onUnmounted
+        } from './../dist/runtime-dom.js';
+        // import {render, h} from '/node_modules/vue/dist/vue.runtime.esm-browser.js'
 
         const Com = {
             props: {
                 name: String
             },
+            emits: ['click', 'update'],
             setup(props, ctx) {
-                console.log(props, ctx);
+                onBeforeMount(() => {
+                    console.log('before mount');
+                });
+                onMounted(() => {
+                    console.log('mounted');
+                })
+
+                onBeforeUpdate(() => {
+                    console.log('before update');
+                });
+                onUpdated(() => {
+                    console.log('updated');
+                });
+
+                onBeforeUnmount(() => {
+                    console.log('before unmount');
+                });
+                onUnmounted(() => {
+                    console.log('unmounted');
+                });
                 return {
                     msg: 'Hello World'
                 }
@@ -24,9 +48,46 @@
                 return `Hello ${this.msg}`;
             }
         }
-        render(h(Com, {
+
+        const Com1 = {
+            props: {
+                name: String
+            },
+            emits: ['click', 'update'],
+            setup(props, ctx) {
+                ctx.emit('click', 123);
+                return {
+                    msg: 'Hello World'
+                }
+            },
+            render() {
+                return `Hello ${this.name}`;
+            }
+        }
+        const vnode = h(Com, {
             name: 'test',
-        }), app);
+            a: 123,
+            onClick: () => {
+                console.log('clicked');
+            }
+        })
+        render(vnode, app);
+
+
+        setTimeout(() => {
+            render(h(Com, {
+                name: 'test1',
+                a: 123,
+                onClick: () => {
+                    console.log('clicked');
+                }
+            }), app)
+            // render(null, app);
+        }, 1000)
+
+        setTimeout(() => {
+            render(null, app)
+        }, 2000)
     </script>
 </body>
 </html>

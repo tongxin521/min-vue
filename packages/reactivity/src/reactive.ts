@@ -1,8 +1,9 @@
 import { isObject } from "@vue/shared";
 import { mutableHandler, shallowReactiveHandlers } from "./baseHandlers";
+import { ReactiveFlags } from "./constants";
 
-const reactiveMap = new WeakMap();
-const shallowReactiveMap = new WeakMap();
+export const reactiveMap = new WeakMap();
+export const shallowReactiveMap = new WeakMap();
 
 export function reactive(obj) {
     return createReactiveObject(
@@ -37,4 +38,10 @@ function createReactiveObject(target, isReadonly, baseHandlers, proxyMap) {
     proxyMap.set(target, proxy);
 
     return proxy;
+}
+
+
+export function toRaw(observed) {
+    const raw = observed && observed[ReactiveFlags.RAW];
+    return raw ? toRaw(raw) : observed;
 }

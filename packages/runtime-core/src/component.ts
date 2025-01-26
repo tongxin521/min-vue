@@ -5,6 +5,7 @@ import { createAppContext } from "./apiCreateApp";
 import { initSlots } from "./componentSlots";
 import { applyOptions } from "./componentOptions";
 import { track } from "@vue/reactivity";
+import { emit, normalizeEmitsOptions } from "./componentEmits";
 
 const emptyAppContext = createAppContext()
 let uid = 0;
@@ -27,6 +28,9 @@ export function createComponentInstance(vnode) {
         exposed: null,
         // 自定义 props
         propsOptions: normalizePropsOptions(type, appContext),
+        emitsOptions: normalizeEmitsOptions(type, appContext),
+
+        emit: null,
         // 组件上下文（当前组件实例）
         ctx: EMPTY_OBJ,
         data: EMPTY_OBJ,
@@ -45,6 +49,8 @@ export function createComponentInstance(vnode) {
     }
 
     instance.ctx = {_: instance};
+
+    instance.emit = emit.bind(null, instance);
 
     return instance;
 }
@@ -95,8 +101,6 @@ function setupStatefulComponent(instance) {
     const Component = instance.type;
 
     const {setup} = Component;
-
-    
 
     instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers)
 

@@ -6,6 +6,8 @@ export const publicPropertiesMap = extend({}, {
     $props: (i) => i.props,
     $attrs: (i) => i.attrs,
     $slots: (i) => i.slots,
+    $emit: (i) => i.emit,
+    $options: (i) => i.type,
 })
 
 export const PublicInstanceProxyHandlers = {

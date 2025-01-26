@@ -1,6 +1,7 @@
 import { EMPTY_OBJ, extend, hasOwn, isArray, isFunction, isReservedProp } from "@vue/shared";
 import { createInternalObject } from "./internalObject";
-import { shallowReactive } from "@vue/reactivity";
+import { shallowReactive, toRaw, trigger } from "@vue/reactivity";
+import { isEmitListener } from "./componentEmits";
 
 
 
@@ -22,6 +23,7 @@ export function initProps(instance, rawProps, isStateful) {
 
 function setFullProps(instance, rawProps, props, attrs) {
     const [options, needCastKeys] = instance.propsOptions;
+    let hasAttrsChanged = false;
     if (rawProps) {
         for (const key in rawProps) {
             if (isReservedProp(key)) {
@@ -33,11 +35,17 @@ function setFullProps(instance, rawProps, props, attrs) {
             if (options && hasOwn(options, key)) {
                 props[key] = value;
             }
-            else {
-                attrs[key] = value;
+            else if (!isEmitListener(instance.emitsOptions, key)){
+                if (!(key in attrs) || value !== attrs[key]) {
+                    attrs[key] = value;
+                    hasAttrsChanged = true;
+                }
+                
             }
         }
     }
+
+    return hasAttrsChanged;
 }
 
 
@@ -114,5 +122,31 @@ export function normalizePropsOptions(comp, appContext) {
     const res = [normalized, needCastKeys];
 
     return res;
+
+}
+
+
+export const updateProps = (instance, rawProps) => {
+    const { props, attrs } = instance;
+    const rawCurrentProps = toRaw(props)
+    let hasAttrsChanged = false;
+
+    if (setFullProps(instance, rawProps, props, attrs)) {
+        hasAttrsChanged = true;
+    }
+
+    if (attrs !== rawCurrentProps) {
+        for (const key in attrs) {
+            if (!hasOwn(rawProps, key)) {
+                delete attrs[key];
+                hasAttrsChanged = true;
+            }
+        }
+    }
+
+    if (hasAttrsChanged) {
+        trigger(instance.attrs, '');
+    }
+
 
 }

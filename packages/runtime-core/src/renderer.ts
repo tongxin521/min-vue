@@ -3,7 +3,9 @@ import { isSameNodeType, normalizeVNode, Text, Fragment } from "./vnode";
 import { EMPTY_OBJ, NOOP, invokeArrayFns } from "@vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
 import { ReactiveEffect } from "@vue/reactivity";
-import { renderComponentRoot } from "./componentRenderUtils";
+import { renderComponentRoot, shouldUpdateComponent } from "./componentRenderUtils";
+import { updateProps } from "./componentProps";
+import { updateSlots } from "./componentSlots";
 
 export function createRenderer(option) {
     const {
@@ -19,9 +21,32 @@ export function createRenderer(option) {
         nextSibling: hostNextSibling,
     } = option;
 
+    const unmountComponent = (instance) => {
+        const {subTree, bum, um} = instance;
+
+        if (bum) {
+            invokeArrayFns(bum);
+        }
+
+        // 卸载组件的子树
+        unmount(subTree);
+
+        if (um) {
+            invokeArrayFns(um);
+        }
+    };
+
     const unmount = (vnode) => {
-        // 卸载元素节点
-        hostRemove(vnode.el);
+        const {shapeFlag} = vnode;
+
+        if (shapeFlag & ShapeFlags.COMPONENT) {
+            unmountComponent(vnode.component);
+        }
+        else {
+            // 卸载元素节点
+            hostRemove(vnode.el);
+        }
+        
     }
 
     
@@ -271,10 +296,18 @@ export function createRenderer(option) {
         }
     }
 
+    const updateComponentPreRender = (instance, nextVNode) => {
+        nextVNode.component = instance;
+        instance.vnode = nextVNode;
+        instance.next = null;
+        instance.props = nextVNode.props;
+        updateProps(instance, nextVNode.props);
+        updateSlots(instance, nextVNode.children);
+    }
+
     const setupRenderEffect = (instance, initialVNode, container, anchor) => {
         const componentUpdateFn = () => {
             if (!instance.isMounted) {
-                const {el, props} = initialVNode;
 
                 const {bm, m} = instance;
 
@@ -294,6 +327,34 @@ export function createRenderer(option) {
 
                 instance.isMounted = true;
             }
+            else {
+                let {next, bu, u, vnode} = instance;
+
+                if (next) {
+                    next.el = vnode.el;
+                    updateComponentPreRender(instance, next);
+                }
+                else {
+                    next = vnode;
+                }
+
+                if (bu) {
+                    invokeArrayFns(bu);
+                }
+
+                const nextTree = renderComponentRoot(instance);
+
+                const prevTree = instance.subTree;
+
+                instance.subTree = nextTree;
+
+                patch(prevTree, nextTree, hostParentNode(vnode.el), getNextHostNode(prevTree))
+
+
+                if (u) {
+                    invokeArrayFns(u);
+                }
+            }
             
 
         }
@@ -303,11 +364,11 @@ export function createRenderer(option) {
             }
         })
 
-        const effect = new ReactiveEffect(componentUpdateFn, NOOP, () => {
+        const effect = (instance.effect = new ReactiveEffect(componentUpdateFn, NOOP, () => {
             if (effect.dirty) {
                 updata();
             }
-        });
+        }));
 
         
         updata();
@@ -322,12 +383,36 @@ export function createRenderer(option) {
         setupRenderEffect(instance, initialVNode, container, anchor);
     }
 
+    const getNextHostNode = vnode => {
+        if (vnode.shapeFlag & ShapeFlags.COMPONENT) {
+            return getNextHostNode(vnode.component.subTree);
+        }
+
+        const el = hostNextSibling(vnode.el);
+
+        return el;
+    }
+
+    const updateComponent = (n1, n2) => {
+        const instance = (n2.component = n1.component);
+
+        if (shouldUpdateComponent(n1, n2)) {
+            instance.next = n2;
+            instance.effect.dirty = true;
+            instance.update();
+        }
+        else {
+            n2.el = n1.el;
+            instance.vnode = n2;
+        }
+    }
+
     const processComponent = (n1, n2, container, anchor) => {
         if (n1 == null) {
             mountComponent(n2, container, anchor);
         }
         else {
-            // updateComponent(n1, n2);
+            updateComponent(n1, n2);
         }
     }
 

@@ -1,5 +1,6 @@
 import { isObject } from '../../shared/src';
-import { reactive } from './reactive';
+import { ReactiveFlags } from './constants';
+import { reactive, reactiveMap, shallowReactiveMap } from './reactive';
 import { track, trigger } from './reactiveEffect';
 
 class BaseReactiveHandler {
@@ -9,6 +10,15 @@ class BaseReactiveHandler {
     ) {}
 
     get(target, key, receiver) {
+        const shallow = this._isShallow;
+        if (key === ReactiveFlags.RAW) {
+            if ((shallow ? shallowReactiveMap
+                : reactiveMap).get(target)
+            ){
+                return target;
+            }
+            return;
+        }
         const res = Reflect.get(target, key, receiver);
         
         track(target, key);

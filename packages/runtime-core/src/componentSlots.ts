@@ -47,3 +47,12 @@ export function initSlots(instance, children) {
         normalizeVNodeSlots(instance, children)
     }
 }
+
+export const updateSlots = (instance, children) => {
+    const { vnode, slots } = instance;
+    if (vnode.shapeFlag & ShapeFlags.SLOTS_CHILDREN) {
+        if (children) {
+            normalizeObjectSlots(children, slots , instance)
+        }
+    }
+}

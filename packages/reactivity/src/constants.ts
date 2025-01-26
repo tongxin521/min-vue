@@ -14,3 +14,11 @@ export enum DirtyLevels {
     // 并且这个变化影响了依赖项的结果时，依赖项会被标记为Dirty。一旦依赖项被标记为Dirty，Vue将在适当的时机（如下一个渲染周期）重新计算它。
     Dirty = 4,
   }
+
+  export enum ReactiveFlags {
+    SKIP = '__v_skip',
+    IS_REACTIVE = '__v_isReactive',
+    IS_READONLY = '__v_isReadonly',
+    IS_SHALLOW = '__v_isShallow',
+    RAW = '__v_raw',
+  }
