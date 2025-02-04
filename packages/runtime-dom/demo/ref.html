@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+
+        import {render, h, ref, onMounted, onBeforeMount
+        } from './../dist/runtime-dom.js';
+
+        // import {render, h, ref, onMounted, onBeforeMount
+        // } from '/node_modules/vue/dist/vue.runtime.esm-browser.js';
+
+        const App = {
+            setup() {
+                const comRef = ref(null)
+                onBeforeMount(() => {
+                    console.log(comRef.value);
+                })
+                onMounted(() => {
+                    console.log(comRef.value);
+                })
+                return () => h('div', ['Hello, ', h(Com, {ref: comRef})]);
+            },
+        }
+
+        const Com = {
+            setup() {
+                return () => h('div', 'World');
+            }
+        }
+        render(h(App), app);
+    </script>
+</body>
+</html>

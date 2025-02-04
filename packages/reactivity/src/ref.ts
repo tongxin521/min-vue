@@ -1,5 +1,5 @@
 import { isObject } from "@vue/shared"
-import { reactive } from "./reactive"
+import { isReactive, reactive } from "./reactive"
 import { activeEffect, trackEffect, triggerEffect } from "./effect"
 import { createDep } from "./dep"
 
@@ -45,5 +45,34 @@ export function triggerRefValue(ref) {
         triggerEffect(dep);
     }
 }
+
+
+export function isRef(r) {
+    return !!(r && r.___v_isRef === true)
+}
+
+
+export function proxyRefs(objectWithRefs) {
+    return isReactive(objectWithRefs)
+        ? objectWithRefs
+        : new Proxy(objectWithRefs, shallowUnwrapHandlers)
+}
+
+const shallowUnwrapHandlers = {
+    get: (target, key, receiver) => unref(Reflect.get(target, key, receiver)),
+    set: (target, key, value, receiver) => {
+      const oldValue = target[key]
+      if (isRef(oldValue) && !isRef(value)) {
+        oldValue.value = value
+        return true
+      } else {
+        return Reflect.set(target, key, value, receiver)
+      }
+    },
+}
+
+export function unref<T>(ref): T {
+    return isRef(ref) ? ref.value : ref
+  }
 
 

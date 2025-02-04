@@ -1,6 +1,7 @@
 import { isArray, isFunction, isObject, isString } from "@vue/shared"
 import { ShapeFlags } from "packages/shared/src/shapeFlags"
 import { currentRenderingInstance } from "./componentRenderContext";
+import { isRef } from "@vue/reactivity";
 
 export const Text = Symbol.for('v-text');
 export const Fragment = Symbol.for('v-fgt')
@@ -23,7 +24,8 @@ export function createVNode(type, props, children = null) {
         // 子节点
         children,
         // key
-        key: props?.key || null,
+        key: props && normalizeKey(props),
+        ref: props && normalizeRef(props),
         // 元素
         el: null,
         shapeFlag,
@@ -106,4 +108,19 @@ export function normalizeVNode(child) {
         return createVNode(Text, null, String(child));
     }
     
+}
+
+function normalizeKey({key}) {
+    return key != null ? key : null;
+}
+
+function normalizeRef({ref, ref_key, ref_for}) {
+    if (typeof ref === 'boolean') {
+        ref = ref + '';
+    }
+    return (ref !== null ?
+        isString(ref) || isRef(ref) || isFunction(ref) ?
+        { i: currentRenderingInstance, r: ref, k: ref_key, f: !!ref_for }
+        : ref
+        : null);
 }

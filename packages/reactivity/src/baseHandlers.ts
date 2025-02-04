@@ -10,9 +10,17 @@ class BaseReactiveHandler {
     ) {}
 
     get(target, key, receiver) {
-        const shallow = this._isShallow;
-        if (key === ReactiveFlags.RAW) {
-            if ((shallow ? shallowReactiveMap
+        const isShallow = this._isShallow;
+        const isReadonly = this._isReadonly;
+        if (key === ReactiveFlags.IS_REACTIVE) {
+          return !isReadonly
+        } else if (key === ReactiveFlags.IS_READONLY) {
+          return isReadonly
+        } else if (key === ReactiveFlags.IS_SHALLOW) {
+          return isShallow
+        }
+        else if (key === ReactiveFlags.RAW) {
+            if ((isShallow ? shallowReactiveMap
                 : reactiveMap).get(target)
             ){
                 return target;
@@ -23,7 +31,7 @@ class BaseReactiveHandler {
         
         track(target, key);
 
-        if (this._isShallow) {
+        if (isShallow) {
             return res;
         }
         if (isObject(res)) {

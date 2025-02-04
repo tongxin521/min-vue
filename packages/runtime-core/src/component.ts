@@ -1,10 +1,10 @@
 import { EMPTY_OBJ, ShapeFlags, isFunction, isObject } from "@vue/shared";
 import { initProps, normalizePropsOptions } from "./componentProps";
-import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
+import { PublicInstanceProxyHandlers, publicPropertiesMap } from "./componentPublicInstance";
 import { createAppContext } from "./apiCreateApp";
 import { initSlots } from "./componentSlots";
 import { applyOptions } from "./componentOptions";
-import { track } from "@vue/reactivity";
+import { markRaw, proxyRefs, track } from "@vue/reactivity";
 import { emit, normalizeEmitsOptions } from "./componentEmits";
 
 const emptyAppContext = createAppContext()
@@ -40,6 +40,7 @@ export function createComponentInstance(vnode, parent) {
         props: EMPTY_OBJ,
         attrs: EMPTY_OBJ,
         slots: EMPTY_OBJ,
+        refs: EMPTY_OBJ,
         setupState: EMPTY_OBJ,
         setupContext: null,
         // 组件渲染状态
@@ -94,7 +95,7 @@ function handleSetupResult(instance, setupResult) {
     if (isFunction(setupResult)) {
         instance.render = setupResult;
     } else if (isObject(setupResult)) {
-        instance.setupState = setupResult;
+        instance.setupState = proxyRefs(setupResult);
     }
 
     finishComponentSetup(instance);
@@ -149,4 +150,26 @@ function setCurrentInstance(instance) {
     return () => {
         currentInstance = prev;
     }
+}
+
+
+export function getExposeProxy(instance) {
+    if (instance.exposed) {
+        return (
+            instance.exposeProxy ||
+            (instance.exposeProxy = new Proxy(proxyRefs(markRaw(instance.exposed)), {
+              get(target, key: string) {
+                if (key in target) {
+                  return target[key]
+                } else if (key in publicPropertiesMap) {
+                  return publicPropertiesMap[key](instance)
+                }
+              },
+              has(target, key: string) {
+                return key in target || key in publicPropertiesMap
+              },
+            }))
+          )
+    }
+
 }

@@ -8,6 +8,7 @@ export const publicPropertiesMap = extend({}, {
     $slots: (i) => i.slots,
     $emit: (i) => i.emit,
     $options: (i) => i.type,
+    $refs: (i) => i.refs,
 })
 
 export const PublicInstanceProxyHandlers = {
@@ -31,8 +32,16 @@ export const PublicInstanceProxyHandlers = {
     },
 
     set({_: instance}, key, value) {
-        const {data} = instance;
-        if (hasOwn(data, key)) {
+        const {data, setupState, props} = instance;
+        if (hasOwn(setupState, key)) {
+            setupState[key] = value;
+            return true;
+        }
+        else if (hasOwn(props, key)) {
+            return false;
+        }
+        else if (hasOwn(data, key)) {
+            data[key] = value;
             return true;
         }
     }

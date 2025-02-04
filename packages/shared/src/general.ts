@@ -40,3 +40,20 @@ const hyphenateRE = /\B([A-Z])/g
 export const hyphenate = cacheStringFunction((str: string) =>
   str.replace(hyphenateRE, '-$1').toLowerCase(),
 )
+
+
+export const def = (obj, key, value) => {
+  Object.defineProperty(obj, key, {
+    configurable: true,
+    enumerable: false,
+    value,
+  })
+}
+
+
+export const remove = <T>(arr: T[], el: T) => {
+  const i = arr.indexOf(el)
+  if (i > -1) {
+    arr.splice(i, 1)
+  }
+}

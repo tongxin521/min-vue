@@ -4,13 +4,25 @@ import { isEmitListener } from "./componentEmits";
 import { setCurrentRenderingInstance } from "./componentRenderContext";
 
 export function renderComponentRoot(instance) {
-    const {vnode, proxy, type, props, slots, attrs, emit} = instance;
+    const {
+        vnode,
+        proxy,
+        type,
+        props, 
+        slots,
+        attrs,
+        emit,
+        render,
+        setupState,
+        data,
+        ctx,
+    } = instance;
     const prev = setCurrentRenderingInstance(instance)
 
     let result;
     try {
         if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-            result = normalizeVNode(type.render.call(proxy));
+            result = normalizeVNode(render.call(proxy, proxy, props, setupState, data, ctx));
         }
         else {
             const render = type;

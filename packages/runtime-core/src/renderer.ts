@@ -6,6 +6,9 @@ import { ReactiveEffect } from "@vue/reactivity";
 import { renderComponentRoot, shouldUpdateComponent } from "./componentRenderUtils";
 import { updateProps } from "./componentProps";
 import { updateSlots } from "./componentSlots";
+import { setRef } from "./rendererTemplateRef";
+import { queueJob } from "./scheduler";
+
 
 export function createRenderer(option) {
     const {
@@ -233,7 +236,6 @@ export function createRenderer(option) {
             const prev = oldProps[key];
             const next = newProps[key];
             if (prev !== next && key !== 'key') {
-                console.log(key, prev, next);
                 hostPatchProp(el, key, prev, next);
             }
         }
@@ -310,7 +312,6 @@ export function createRenderer(option) {
             if (!instance.isMounted) {
 
                 const {bm, m} = instance;
-
                 const subTree = (instance.subTree = renderComponentRoot(instance));
 
                 if (bm) {
@@ -341,13 +342,11 @@ export function createRenderer(option) {
                 if (bu) {
                     invokeArrayFns(bu);
                 }
-
                 const nextTree = renderComponentRoot(instance);
 
                 const prevTree = instance.subTree;
 
                 instance.subTree = nextTree;
-
                 patch(prevTree, nextTree, hostParentNode(vnode.el), getNextHostNode(prevTree), instance)
 
                 next.el = nextTree.el
@@ -361,15 +360,12 @@ export function createRenderer(option) {
         }
         const updata = (instance.update = () => {
             if (effect.dirty) {
+                
                 effect.run();
             }
         })
 
-        const effect = (instance.effect = new ReactiveEffect(componentUpdateFn, NOOP, () => {
-            if (effect.dirty) {
-                updata();
-            }
-        }));
+        const effect = (instance.effect = new ReactiveEffect(componentUpdateFn, NOOP, () => queueJob(updata)));
 
         
         updata();
@@ -426,7 +422,7 @@ export function createRenderer(option) {
             unmount(n1);
             n1 = null;
         }
-        const {type, shapeFlag} = n2;
+        const {type, ref, shapeFlag} = n2;
         switch (type) {
             case Text:
                 processText(n1, n2, container, anchor);
@@ -441,6 +437,10 @@ export function createRenderer(option) {
                 else if (shapeFlag & ShapeFlags.COMPONENT) {
                     processComponent(n1, n2, container, anchor, parentComponent)
                 }
+        }
+
+        if (ref != null && parentComponent) {
+            setRef(ref, n1 && n1.ref, n2 || n1, !n2)
         }
 
     }

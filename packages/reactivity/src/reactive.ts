@@ -1,4 +1,4 @@
-import { isObject } from "@vue/shared";
+import { def, isObject } from "@vue/shared";
 import { mutableHandler, shallowReactiveHandlers } from "./baseHandlers";
 import { ReactiveFlags } from "./constants";
 
@@ -45,3 +45,20 @@ export function toRaw(observed) {
     const raw = observed && observed[ReactiveFlags.RAW];
     return raw ? toRaw(raw) : observed;
 }
+
+
+export function isReactive(value) {
+    if (isReadonly(value)) {
+        return isReactive(value[ReactiveFlags.RAW]);
+    }
+    return !!(value && value[ReactiveFlags.IS_REACTIVE]);
+}
+
+export function isReadonly(value) {
+    return !!(value && value[ReactiveFlags.IS_READONLY]);
+}
+
+export function markRaw(value) {
+    def(value, ReactiveFlags.SKIP, true)
+    return value
+  }
