@@ -6,7 +6,7 @@ import { isRef } from "@vue/reactivity";
 export const Text = Symbol.for('v-text');
 export const Fragment = Symbol.for('v-fgt')
 
-export function createVNode(type, props, children = null) {
+export function createVNode(type, props?, children = null) {
     const shapeFlag = isString(type)
         ? ShapeFlags.ELEMENT
         : isObject(type)

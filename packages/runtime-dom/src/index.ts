@@ -14,6 +14,7 @@ import {
     inject,
     useSlots,
     useAttrs,
+    defineAsyncComponent,
 } from "@vue/runtime-core";
 
 export {
@@ -27,6 +28,7 @@ export {
     inject,
     useSlots,
     useAttrs,
+    defineAsyncComponent,
 }
 
 export {ref, reactive} from '@vue/reactivity'

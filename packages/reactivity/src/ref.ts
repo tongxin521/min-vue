@@ -3,7 +3,7 @@ import { isReactive, reactive } from "./reactive"
 import { activeEffect, trackEffect, triggerEffect } from "./effect"
 import { createDep } from "./dep"
 
-export function ref(rawValue) {
+export function ref(rawValue?) {
     return new RefImpl(rawValue)
 }
 

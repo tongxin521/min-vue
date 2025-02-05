@@ -8,6 +8,7 @@ import { updateProps } from "./componentProps";
 import { updateSlots } from "./componentSlots";
 import { setRef } from "./rendererTemplateRef";
 import { queueJob, queuePostFlushCb } from "./scheduler";
+import { isAsyncWrapper } from "./apiAsyncComponent";
 
 export const queuePostRenderEffect = queuePostFlushCb;
 
@@ -313,6 +314,7 @@ export function createRenderer(option) {
             if (!instance.isMounted) {
 
                 const {bm, m} = instance;
+
                 const subTree = (instance.subTree = renderComponentRoot(instance));
 
                 if (bm) {

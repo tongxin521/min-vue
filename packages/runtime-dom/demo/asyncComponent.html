@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+        import {render, h , defineAsyncComponent} from './../dist/runtime-dom.js';
+
+        const loader = () => new Promise(resolve => {
+            setTimeout(() => {
+                resolve({
+                    setup() {
+                        return () => h('div', 'hello world')
+                    }
+                })
+            }, 2000)
+        })
+
+        const loadingComponent = {
+            render() {
+                return h('div', 'loading...')
+            }
+        }
+
+        const errorComponent = {
+            render() {
+                return h('div', 'error...')
+            }
+        }
+
+        const onError = (err, retry, fail) => {
+            console.log(err, retry, fail)
+        }
+
+        const App = defineAsyncComponent({
+            loader,
+            loadingComponent,
+            errorComponent,
+            delay: 200,
+            timeout: 200,
+            onError,
+        })
+
+        render(h(App), app)
+    </script>
+</body>
+</html>
