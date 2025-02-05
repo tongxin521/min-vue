@@ -17,3 +17,12 @@ export function defineOptions() {
 export function defineSlots() {
     return null;
 }
+
+export function defineModel() {
+    return null;
+}
+
+
+export function withDefaults() {
+    return null;
+}
