@@ -1,3 +1,5 @@
+import { createSetupContext, getCurrentInstance } from "./component";
+
 export function defineProps() {
     return null;
 }
@@ -25,4 +27,13 @@ export function defineModel() {
 
 export function withDefaults() {
     return null;
+}
+
+export function useSlots() {
+    return getContext().slots;
+}
+
+function getContext() {
+    const i = getCurrentInstance();
+    return i.setupContext || (i.setupContext = createSetupContext(i))
 }

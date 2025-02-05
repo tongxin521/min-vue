@@ -12,6 +12,7 @@ import {
     onUnmounted,
     provide,
     inject,
+    useSlots,
 } from "@vue/runtime-core";
 
 export {
@@ -23,6 +24,7 @@ export {
     onUnmounted,
     provide,
     inject,
+    useSlots,
 }
 
 export {ref, reactive} from '@vue/reactivity'

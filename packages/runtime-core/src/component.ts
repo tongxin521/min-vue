@@ -6,6 +6,7 @@ import { initSlots } from "./componentSlots";
 import { applyOptions } from "./componentOptions";
 import { markRaw, proxyRefs, track } from "@vue/reactivity";
 import { emit, normalizeEmitsOptions } from "./componentEmits";
+import { currentRenderingInstance } from "./componentRenderContext";
 
 const emptyAppContext = createAppContext()
 let uid = 0;
@@ -79,7 +80,7 @@ const attrsProxyHandlers = {
     }
 }
 
-function createSetupContext(instance) {
+export function createSetupContext(instance) {
     const expose = exposed => {
         instance.exposed = exposed || {};
     }
@@ -101,7 +102,7 @@ function handleSetupResult(instance, setupResult) {
     finishComponentSetup(instance);
 }
 
-function setupStatefulComponent(instance) {
+export function setupStatefulComponent(instance) {
     const Component = instance.type;
 
     const {setup} = Component;
@@ -173,3 +174,6 @@ export function getExposeProxy(instance) {
     }
 
 }
+
+
+export const getCurrentInstance = () => currentInstance || currentRenderingInstance;
