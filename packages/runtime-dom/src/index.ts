@@ -13,6 +13,7 @@ import {
     provide,
     inject,
     useSlots,
+    useAttrs,
 } from "@vue/runtime-core";
 
 export {
@@ -25,6 +26,7 @@ export {
     provide,
     inject,
     useSlots,
+    useAttrs,
 }
 
 export {ref, reactive} from '@vue/reactivity'

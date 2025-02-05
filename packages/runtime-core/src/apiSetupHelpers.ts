@@ -33,6 +33,10 @@ export function useSlots() {
     return getContext().slots;
 }
 
+export function useAttrs() {
+    return getContext().attrs;
+}
+
 function getContext() {
     const i = getCurrentInstance();
     return i.setupContext || (i.setupContext = createSetupContext(i))
