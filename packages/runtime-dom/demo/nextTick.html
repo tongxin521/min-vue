@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+        import {nextTick, ref, render, h} from './../dist/runtime-dom.js'
+        const App = {
+            setup() {
+                const count = ref(0)
+                function increment() {
+                    count.value++
+                    console.log(document.getElementById('counter').textContent)
+                    nextTick(() => {
+                        console.log(document.getElementById('counter').textContent)
+                    })
+                }
+                return () => {
+                    return h('button', {id: 'counter', onClick: increment}, `count is: ${count.value}`)
+                }
+            }
+        }
+        render(h(App), app)
+    </script>
+</body>
+</html>

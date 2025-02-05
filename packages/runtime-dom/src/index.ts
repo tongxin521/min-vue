@@ -15,6 +15,7 @@ import {
     useSlots,
     useAttrs,
     defineAsyncComponent,
+    nextTick,
 } from "@vue/runtime-core";
 
 export {
@@ -29,6 +30,7 @@ export {
     useSlots,
     useAttrs,
     defineAsyncComponent,
+    nextTick,
 }
 
 export {ref, reactive} from '@vue/reactivity'

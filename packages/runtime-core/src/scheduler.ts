@@ -76,3 +76,8 @@ function flushPostFlushCbs() {
     }
 
 }
+
+export function nextTick(this, fn) {
+    const p = currentFlushPromise || resolvedPromise;
+    return fn ? p.then(this ? fn.bind(this) : fn) : p
+}
