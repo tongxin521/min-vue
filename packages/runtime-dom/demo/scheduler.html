@@ -14,33 +14,57 @@
 
         // import {render, h, ref, onMounted, onBeforeMount
         // } from '/node_modules/vue/dist/vue.runtime.esm-browser.js';
+        const A = {
+            setup(props, ctx) {
+                onBeforeMount(() => {
+                    console.log('beforeMounted A');
+                });
+                onMounted(async () => {
+                    console.log('mounted A');
+                });
 
-        const App = {
-            setup() {
-                const count = ref(0);
-                return {
-                    count,
-                    firstName,
-                    lastName,
-                };
-            },
-            render(ctx) {
-                return h('div', [
-                    h('button', {
-                        onClick() {
-                            ctx.count++
-                        }
-                    }, '添加'),
-                    h('span', ctx.count),
-                    h('button', {
-                        onClick() {
-                            ctx.count--
-                        }
-                    }, '减少')
-                ]);
+                return () => h('div', null, ctx.slots.default());
             }
         }
-        render(h(App), app);
+
+        const B = {
+            setup() {
+                onBeforeMount(() => {
+                    console.log('beforeMounted B');
+                });
+                onMounted(() => {
+                    console.log('mounted B');
+                });
+
+                return () => h('div', 'B');
+            }
+        }
+        const App = {
+            setup(props, ctx) {
+                const count = ref(0);
+                onBeforeMount(() => {
+                    console.log('beforeMounted');
+                });
+                onMounted(() => {
+                    console.log('mounted');
+                });
+
+                return () => {
+                    return h('div', ctx.slots.default()); 
+                }
+            },
+        }
+        render(h(App, null, {
+            default() {
+                return [
+                    h(A, null, {
+                        default() {
+                            return h(B);
+                        }
+                    })
+                ]
+            }
+        }), app);
     </script>
 </body>
 </html>

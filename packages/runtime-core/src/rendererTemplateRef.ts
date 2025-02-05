@@ -1,7 +1,7 @@
 import { EMPTY_OBJ, ShapeFlags, hasOwn, isArray, isFunction, isString, remove } from "@vue/shared";
 import { getExposeProxy } from "./component";
 import { isRef } from "@vue/reactivity";
-import { queueJob } from "./scheduler";
+import { queuePostRenderEffect } from "./renderer";
 
 export function setRef(rawRef, oldRawRef, vnode, isUnmount = false) {
     if (isArray(rawRef)) {
@@ -88,10 +88,7 @@ export function setRef(rawRef, oldRawRef, vnode, isUnmount = false) {
             if (isUnmount || isVFor) {
                 doSet()
               } else {
-                // #1789: set new refs in a post job so that they don't get overwritten
-                // by unmounting ones.
-                ;(doSet as any).id = -1
-                queueJob(doSet)
+                queuePostRenderEffect(doSet);
               }
         }
 

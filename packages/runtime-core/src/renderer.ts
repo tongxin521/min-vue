@@ -7,8 +7,9 @@ import { renderComponentRoot, shouldUpdateComponent } from "./componentRenderUti
 import { updateProps } from "./componentProps";
 import { updateSlots } from "./componentSlots";
 import { setRef } from "./rendererTemplateRef";
-import { queueJob } from "./scheduler";
+import { queueJob, queuePostFlushCb } from "./scheduler";
 
+export const queuePostRenderEffect = queuePostFlushCb;
 
 export function createRenderer(option) {
     const {
@@ -323,7 +324,7 @@ export function createRenderer(option) {
                 initialVNode.el = subTree.el;
 
                 if (m) {
-                    invokeArrayFns(m);
+                    queuePostRenderEffect(m);
                 }
 
                 instance.isMounted = true;
@@ -352,7 +353,7 @@ export function createRenderer(option) {
                 next.el = nextTree.el
 
                 if (u) {
-                    invokeArrayFns(u);
+                    queuePostRenderEffect(u);
                 }
             }
             
