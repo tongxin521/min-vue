@@ -17,6 +17,7 @@ import {
     defineAsyncComponent,
     nextTick,
     watch,
+    watchEffect,
 } from "@vue/runtime-core";
 
 export {
@@ -33,6 +34,7 @@ export {
     defineAsyncComponent,
     nextTick,
     watch,
+    watchEffect,
 }
 
 export {ref, reactive} from '@vue/reactivity'

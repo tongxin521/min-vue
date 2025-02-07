@@ -9,7 +9,10 @@ let INITIAL_WATCHER_VALUE = {};
 export function watch(source, cb, options) {
 
     return doWatch(source, cb, options);
+}
 
+export function watchEffect(effect, options) {
+    return doWatch(effect, null, options);
 }
 
 
@@ -57,6 +60,14 @@ function doWatch(source, cb, {
     else if (isFunction(source)) {
         if (cb) {
             getter = () => source();
+        }
+        else {
+            getter = () => {
+                if (cleanup) {
+                    cleanup();
+                }
+                return source(onCleanup);
+            }
         }
     }
     else {
@@ -111,6 +122,10 @@ function doWatch(source, cb, {
             oldValue = newVal;
 
         }
+        else {
+            // watchEffect
+            effect.run();
+        }
     }
 
     let scheduler = () => job();
@@ -143,6 +158,9 @@ function doWatch(source, cb, {
             oldValue = effect.run();
         }
         
+    }
+    else {
+        effect.run();
     }
 
     return unwatch;
