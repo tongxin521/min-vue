@@ -1,9 +1,10 @@
 import { def, isObject } from "@vue/shared";
-import { mutableHandler, shallowReactiveHandlers } from "./baseHandlers";
+import { mutableHandler, shallowReactiveHandlers, readonlyHandlers } from "./baseHandlers";
 import { ReactiveFlags } from "./constants";
 
 export const reactiveMap = new WeakMap();
 export const shallowReactiveMap = new WeakMap();
+export const readonlyMap = new WeakMap();
 
 export function reactive(obj) {
     return createReactiveObject(
@@ -23,8 +24,24 @@ export function shallowReactive(obj) {
     );
 }
 
+export function readonly(obj) {
+    return createReactiveObject(
+        obj,
+        true,
+        readonlyHandlers,
+        readonlyMap
+    );
+}
+
 function createReactiveObject(target, isReadonly, baseHandlers, proxyMap) {
     if (!isObject(target)) {
+        return target;
+    }
+
+    if (
+        target[ReactiveFlags.RAW]
+        && !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
+    ) {
         return target;
     }
 
