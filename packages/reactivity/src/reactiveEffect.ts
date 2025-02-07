@@ -33,3 +33,10 @@ export function trigger(target, key) {
     triggerEffect(dep);
 }
 
+export function getDepFromReactive(object, key) {
+    // 从targetMap中获取与object对应的depsMap
+    const depsMap = targetMap.get(object)
+    // 如果depsMap存在，则通过key从depsMap中获取对应的依赖项
+    return depsMap && depsMap.get(key)
+  }
+

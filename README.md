@@ -15,8 +15,18 @@
 # 响应式
 
 1. ref
-2. reactive
+2. shallowRef
 3. isRef
+4. unref
+5. reactive
+6. watch
+7. watchEffect
+8. watchPostEffect
+9. watchSyncEffect
+10. toValue
+11. toRefs
+12. toRef
+13. computed
 
 # 依赖注入
 1. provide

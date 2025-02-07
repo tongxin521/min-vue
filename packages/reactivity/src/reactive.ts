@@ -58,7 +58,16 @@ export function isReadonly(value) {
     return !!(value && value[ReactiveFlags.IS_READONLY]);
 }
 
+export function isShallow(value) {
+    return !!(value && value[ReactiveFlags.IS_SHALLOW]);
+}
+
 export function markRaw(value) {
     def(value, ReactiveFlags.SKIP, true)
     return value
-  }
+}
+
+
+export function toReactive(value) {
+    return isObject(value) ? reactive(value) : value;
+}
