@@ -25,6 +25,8 @@ export class ReactiveEffect {
     _trackId = 0; // 跟踪id
     _depsLength = 0; // 依赖项长度
     _running = 0; // 运行
+    onTrack
+    onTrigger
     constructor(public fn, public trigger, public scheduler) {
     }
 
@@ -105,6 +107,8 @@ export function trackEffect(effct, dep) {
         else {
             effct._depsLength++;
         }
+
+        effct.onTrack && effct.onTrack(extend({effct}));
     }
 
 }
@@ -115,7 +119,7 @@ export function triggerEffect(dep) {
         if (effct._dirtyLevel < DirtyLevels.Dirty) {
             effct._dirtyLevel = DirtyLevels.Dirty;
         }
-
+        effct.onTrigger && effct.onTrigger(extend({effct}));
         effct.scheduler();
         
     }

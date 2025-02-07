@@ -6,3 +6,5 @@ export * from './apiInject';
 export * from './apiSetupHelpers';
 export * from './apiAsyncComponent';
 export {nextTick} from './scheduler';
+
+export * from './apiWatch';

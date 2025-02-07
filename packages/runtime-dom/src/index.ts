@@ -16,6 +16,7 @@ import {
     useAttrs,
     defineAsyncComponent,
     nextTick,
+    watch,
 } from "@vue/runtime-core";
 
 export {
@@ -31,6 +32,7 @@ export {
     useAttrs,
     defineAsyncComponent,
     nextTick,
+    watch,
 }
 
 export {ref, reactive} from '@vue/reactivity'
