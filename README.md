@@ -27,6 +27,12 @@
 11. toRefs
 12. toRef
 13. computed
+14. shallowReactive
+15. isReactive
+16. isReadonly
+17. markRaw
+18. toRaw
+19. readonly
 
 # 依赖注入
 1. provide

@@ -1,6 +1,6 @@
 import { isObject } from '../../shared/src';
 import { ReactiveFlags } from './constants';
-import { reactive, reactiveMap, shallowReactiveMap } from './reactive';
+import { reactive, reactiveMap, readonly, shallowReactiveMap } from './reactive';
 import { track, trigger } from './reactiveEffect';
 
 class BaseReactiveHandler {
@@ -29,13 +29,16 @@ class BaseReactiveHandler {
         }
         const res = Reflect.get(target, key, receiver);
         
-        track(target, key);
+        if (!isReadonly) {
+            track(target, key);
+        }
+        
 
         if (isShallow) {
             return res;
         }
         if (isObject(res)) {
-            return reactive(res);
+            return isReadonly ? readonly(res) : reactive(res);
         }
         return res;
     }
@@ -55,6 +58,21 @@ class MutableReactiveHandler extends BaseReactiveHandler {
     }
 }
 
+class ReadonlyReactiveHandler extends BaseReactiveHandler {
+    constructor(isShallow = false) {
+        super(true, isShallow);
+    }
+    set() {
+        return true;
+    }
+
+    deleteProperty(target, key) {
+        return true;
+    }
+}
+
 export const mutableHandler = new MutableReactiveHandler();
 
 export const shallowReactiveHandlers = new MutableReactiveHandler(true);
+
+export const readonlyHandlers = new ReadonlyReactiveHandler(true);
