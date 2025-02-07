@@ -19,6 +19,10 @@ export function watchPostEffect(effect, options) {
     return doWatch(effect, null, extend({}, options, { flush: 'post' }));
 }
 
+export function watchSyncEffect(effect, options) {
+    return doWatch(effect, null, extend({}, options, { flush: 'sync' }));
+}
+
 
 function doWatch(source, cb, {
     immediate,
