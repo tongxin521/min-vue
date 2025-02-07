@@ -41,7 +41,24 @@ export {
     watchSyncEffect,
 }
 
-export {ref, reactive} from '@vue/reactivity'
+export {
+    ref,
+    reactive,
+    isRef,
+    toRef,
+    toRefs,
+    readonly,
+    isReactive,
+    isReadonly,
+    shallowReactive,
+    shallowReadonly,
+    unref,
+    computed,
+    toRaw,
+    markRaw,
+    shallowRef,
+    isProxy,
+} from '@vue/reactivity'
 
 
 export const rendererOptions = extend({patchProp}, nodeOps);

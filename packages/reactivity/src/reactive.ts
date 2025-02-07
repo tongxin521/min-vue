@@ -98,3 +98,7 @@ export function markRaw(value) {
 export function toReactive(value) {
     return isObject(value) ? reactive(value) : value;
 }
+
+export function isProxy(value) {
+    return value ? !!value[ReactiveFlags.RAW] : false;
+}
