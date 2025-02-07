@@ -75,4 +75,6 @@ export const mutableHandler = new MutableReactiveHandler();
 
 export const shallowReactiveHandlers = new MutableReactiveHandler(true);
 
-export const readonlyHandlers = new ReadonlyReactiveHandler(true);
+export const readonlyHandlers = new ReadonlyReactiveHandler();
+
+export const shallowReadonlyHandlers = new ReadonlyReactiveHandler(true);

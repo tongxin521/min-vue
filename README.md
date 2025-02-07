@@ -33,6 +33,7 @@
 17. markRaw
 18. toRaw
 19. readonly
+20. shallowReadonly
 
 # 依赖注入
 1. provide
