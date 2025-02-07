@@ -59,6 +59,7 @@ export {
     shallowRef,
     isProxy,
     customRef,
+    triggerRef,
 } from '@vue/reactivity'
 
 

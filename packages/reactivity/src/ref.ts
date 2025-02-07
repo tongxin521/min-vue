@@ -191,3 +191,7 @@ class CustomRefImpl<T> {
 
 }
 
+
+export function triggerRef(ref) {
+    triggerRefValue(ref)
+}
