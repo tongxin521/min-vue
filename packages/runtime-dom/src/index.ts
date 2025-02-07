@@ -58,6 +58,7 @@ export {
     markRaw,
     shallowRef,
     isProxy,
+    customRef,
 } from '@vue/reactivity'
 
 

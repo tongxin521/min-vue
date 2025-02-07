@@ -20,30 +20,9 @@ export function toValue(source) {
     return isFunction(source) ? source() : source
 }
 
-export function toRefs(object) {
-    const ret = isArray(object) ? new Array(object.length) : {}
 
-    for (const key in object) {
-        ret[key] = propertyToRef(object, key)
-    }
 
-    return ret
-}
 
-export function toRef(source, key, defaultValue) {
-    if (isRef(source)) {
-        return source;
-    }
-    else if (isFunction(source)) {
-        return new GetterRefImpl(source);
-    }
-    else if (isObject(source) && arguments.length > 1) {
-        return propertyToRef(source, key, defaultValue);
-    }
-    else {
-        return ref(source);
-    }
-}
 
 class RefImpl {
     private _value
@@ -121,6 +100,15 @@ const shallowUnwrapHandlers = {
 }
 
 
+export function toRefs(object) {
+    const ret = isArray(object) ? new Array(object.length) : {}
+
+    for (const key in object) {
+        ret[key] = propertyToRef(object, key)
+    }
+
+    return ret
+}
 
 function propertyToRef(source, key, defaultValue?) {
     const val = source[key]
@@ -150,6 +138,20 @@ class ObjectRefImpl {
     }
 }
 
+export function toRef(source, key, defaultValue) {
+    if (isRef(source)) {
+        return source;
+    }
+    else if (isFunction(source)) {
+        return new GetterRefImpl(source);
+    }
+    else if (isObject(source) && arguments.length > 1) {
+        return propertyToRef(source, key, defaultValue);
+    }
+    else {
+        return ref(source);
+    }
+}
 class GetterRefImpl<T> {
     public readonly __v_isRef = true
     public readonly __v_isReadonly = true
@@ -157,5 +159,35 @@ class GetterRefImpl<T> {
     get value() {
       return this._getter()
     }
-  }
+}
+
+export function customRef(factory) {
+    return new CustomRefImpl(factory)
+}
+
+class CustomRefImpl<T> {
+    public deep = undefined
+    private readonly _get
+    private readonly _set
+    public readonly __v_isRef = true
+
+    constructor(factory) {
+        const { get, set } = factory(
+            () => trackRefValue(this),
+            () => triggerRefValue(this),
+        )
+        this._get = get
+        this._set = set
+
+    }
+
+    get value() {
+        return this._get()
+    }
+
+    set value(newVal) {
+        this._set(newVal)
+    }
+
+}
 
