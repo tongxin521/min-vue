@@ -1,5 +1,5 @@
 import { ReactiveEffect, isReactive, isRef } from "@vue/reactivity";
-import { EMPTY_OBJ, NOOP, hasChanged, isArray, isFunction, isMap, isObject, isPlainObject, isSet } from "@vue/shared";
+import { EMPTY_OBJ, NOOP, extend, hasChanged, isArray, isFunction, isMap, isObject, isPlainObject, isSet } from "@vue/shared";
 import { ReactiveFlags } from "packages/reactivity/src/constants";
 import { queueJob } from "./scheduler";
 import { queuePostRenderEffect } from "./renderer";
@@ -13,6 +13,10 @@ export function watch(source, cb, options) {
 
 export function watchEffect(effect, options) {
     return doWatch(effect, null, options);
+}
+
+export function watchPostEffect(effect, options) {
+    return doWatch(effect, null, extend({}, options, { flush: 'post' }));
 }
 
 

@@ -18,6 +18,7 @@ import {
     nextTick,
     watch,
     watchEffect,
+    watchPostEffect,
 } from "@vue/runtime-core";
 
 export {
@@ -35,6 +36,7 @@ export {
     nextTick,
     watch,
     watchEffect,
+    watchPostEffect,
 }
 
 export {ref, reactive} from '@vue/reactivity'
