@@ -1,6 +1,6 @@
 import { createRenderer, h } from "@vue/runtime-core";
 import { patchProp } from "./patchProp";
-import { extend } from "@vue/shared";
+import { extend, isFunction, isString } from "@vue/shared";
 import { nodeOps } from "./nodeOps";
 
 import {
@@ -70,3 +70,44 @@ export function render(...args: [any, any]) {
 }
 
 export {h}
+
+let renderer
+
+function  ensureRenderer() {
+    return renderer || (renderer = createRenderer(rendererOptions));
+}
+
+export function createApp(...args) {
+    const app = ensureRenderer().createApp(...args);
+
+    const { mount } = app;
+    app.mount = function (containerOrSelector: any) {
+        const container = normalizeContainer(containerOrSelector);
+        const component = app._component;
+        if (!container) {
+            return;
+        }
+        if (!isFunction(component) && !component.render && !component.template) {
+            component.template = container.innerHTML;
+        }
+
+        container.innerHTML = '';
+        const proxy = mount(container, false)
+        if (container instanceof Element) {
+          container.removeAttribute('v-cloak')
+          container.setAttribute('data-v-app', '')
+        }
+        return proxy;
+    };
+
+    return app;
+}
+
+
+function normalizeContainer(container) {
+    if (isString(container)) {
+        const res = document.querySelector(container);
+        return res;
+    }
+    return container;
+}

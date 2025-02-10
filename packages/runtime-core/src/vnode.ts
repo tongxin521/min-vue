@@ -33,6 +33,7 @@ export function createVNode(type, props?, children = null) {
         component: null,
         // 当前渲染的组件实例
         ctx: currentRenderingInstance,
+        appContext: null,
     }
 
     normalizeChildren(vnode, children);

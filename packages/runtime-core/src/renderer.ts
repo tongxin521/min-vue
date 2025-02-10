@@ -8,7 +8,7 @@ import { updateProps } from "./componentProps";
 import { updateSlots } from "./componentSlots";
 import { setRef } from "./rendererTemplateRef";
 import { queueJob, queuePostFlushCb } from "./scheduler";
-import { isAsyncWrapper } from "./apiAsyncComponent";
+import { createAppAPI } from "./apiCreateApp";
 
 export const queuePostRenderEffect = queuePostFlushCb;
 
@@ -460,7 +460,8 @@ export function createRenderer(option) {
         }
     }
     return {
-        render
+        render,
+        createApp: createAppAPI(render)
     }
 }
 

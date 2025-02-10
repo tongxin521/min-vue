@@ -21,6 +21,10 @@ export function createComponentInstance(vnode, parent) {
         vnode,
         // 组件类型
         type,
+        // 父组件
+        parent,
+        // 组件渲染上下文
+        appContext,
         // 组件渲染的 ast 树
         subTree: null,
         // 组件状态代理
@@ -154,7 +158,7 @@ function setCurrentInstance(instance) {
 }
 
 
-export function getExposeProxy(instance) {
+export function getComponentPublicInstance(instance) {
     if (instance.exposed) {
         return (
             instance.exposeProxy ||
@@ -171,6 +175,9 @@ export function getExposeProxy(instance) {
               },
             }))
           )
+    }
+    else {
+        return instance.proxy;
     }
 
 }
