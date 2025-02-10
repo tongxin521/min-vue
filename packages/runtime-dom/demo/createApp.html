@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+        import {createApp, h, inject} from './../dist/runtime-dom.js';
+        // import {createApp, h, inject
+        // } from '/node_modules/vue/dist/vue.runtime.esm-browser.js';
+
+        const A = {
+            setup() {
+                const a = inject('a');
+                // console.log(a)
+                return () => h('div', 'this is A')
+            }
+        }
+        const App = {
+            setup() {
+                
+                return () => h('div', ['hollo word', h(A)])
+            }
+        }
+
+        
+
+        const app = createApp(App);
+
+        app.provide('a', 1)
+        const injected = app.runWithContext(() => {
+            return inject('a');
+        })
+        console.log(injected)
+        app.component("B", {
+            setup() {
+                return () => h('div', 'this is B')
+            }
+        })
+        app.mount('#app')
+        
+        console.log(app)
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import { EMPTY_OBJ, ShapeFlags, hasOwn, isArray, isFunction, isString, remove } from "@vue/shared";
-import { getExposeProxy } from "./component";
+import { getComponentPublicInstance } from "./component";
 import { isRef } from "@vue/reactivity";
 import { queuePostRenderEffect } from "./renderer";
 
@@ -15,7 +15,7 @@ export function setRef(rawRef, oldRawRef, vnode, isUnmount = false) {
     }
 
     const refValue = vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT
-    ? getExposeProxy(vnode.component!) || vnode.component!.proxy
+    ? getComponentPublicInstance(vnode.component!) || vnode.component!.proxy
     : vnode.el;
 
     const value = isUnmount ? null : refValue;

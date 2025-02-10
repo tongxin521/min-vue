@@ -54,3 +54,12 @@
 5. withDefaults
 6. defineModel
 7. defineSlots
+
+
+TODO: 待完成...
+1. createApp
+2. effectScope
+3. getCurrentScope
+4. onScopeDispose
+5. directive
+
