@@ -1,3 +1,5 @@
+# 全局API
+1. createApp
 # 通用
 1. nextTick
 2. defineComponent
@@ -57,7 +59,6 @@
 
 
 TODO: 待完成...
-1. createApp
 2. effectScope
 3. getCurrentScope
 4. onScopeDispose
