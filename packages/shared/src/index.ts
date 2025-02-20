@@ -1,5 +1,6 @@
 export * from './general';
 export * from './shapeFlags';
+export * from './normalizeProp';
 export function isObject(value) {
     return value !== null && typeof value === 'object'
 }

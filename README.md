@@ -13,6 +13,8 @@
 4. onUpdated
 5. onBeforeUnmount
 6. onUnmounted
+7. onActivated
+7. onDeactivated
 
 # 响应式
 
@@ -56,6 +58,15 @@
 5. withDefaults
 6. defineModel
 7. defineSlots
+
+# 渲染函数
+1. h
+2. mergeProps
+3. cloneVNode
+4. isVNode
+
+# 组件
+1. KeepAlive
 
 
 TODO: 待完成...

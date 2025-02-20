@@ -9,4 +9,6 @@ export {nextTick} from './scheduler';
 
 export * from './apiWatch';
 
+export * from './components/KeepAlive';
+
 export const version = '1.0.0'

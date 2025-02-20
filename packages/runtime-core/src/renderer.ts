@@ -1,5 +1,5 @@
 import { ShapeFlags } from "packages/shared/src/shapeFlags";
-import { isSameNodeType, normalizeVNode, Text, Fragment } from "./vnode";
+import { isSameVNodeType, normalizeVNode, Text, Fragment } from "./vnode";
 import { EMPTY_OBJ, NOOP, invokeArrayFns } from "@vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
 import { ReactiveEffect } from "@vue/reactivity";
@@ -9,10 +9,11 @@ import { updateSlots } from "./componentSlots";
 import { setRef } from "./rendererTemplateRef";
 import { queueJob, queuePostFlushCb } from "./scheduler";
 import { createAppAPI } from "./apiCreateApp";
+import { isKeepAlive } from "./components/KeepAlive";
 
 export const queuePostRenderEffect = queuePostFlushCb;
 
-export function createRenderer(option) {
+export function createRenderer(options) {
     const {
         insert: hostInsert,
         remove: hostRemove,
@@ -24,7 +25,7 @@ export function createRenderer(option) {
         setElementText: hostSetElementText,
         parentNode: hostParentNode,
         nextSibling: hostNextSibling,
-    } = option;
+    } = options;
 
     const unmountComponent = (instance) => {
         const {subTree, bum, um} = instance;
@@ -34,15 +35,23 @@ export function createRenderer(option) {
         }
 
         // 卸载组件的子树
-        unmount(subTree);
+        unmount(subTree, instance);
 
         if (um) {
             invokeArrayFns(um);
         }
     };
 
-    const unmount = (vnode) => {
-        const {shapeFlag} = vnode;
+    const unmount = (vnode, parentComponent) => {
+        const {shapeFlag, ref} = vnode;
+
+        if (ref != null) {
+            setRef(ref, null, vnode, true)
+        }
+
+        if (shapeFlag & ShapeFlags.COMPONENT_SHOULD_KEEP_ALIVE) {
+            parentComponent.ctx.deactivate(vnode);
+        }
 
         if (shapeFlag & ShapeFlags.COMPONENT) {
             unmountComponent(vnode.component);
@@ -91,7 +100,7 @@ export function createRenderer(option) {
         if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
             // 当前是文本子节点，之前是数组子节点，卸载数组子节点
             if (preShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
-                unmountChildren(c1);
+                unmountChildren(c1, parentComponent);
             }
             // 当前是文本子节点，之前也是文本子节点
             if (c1 !== c2) {
@@ -102,11 +111,11 @@ export function createRenderer(option) {
             if (preShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
                 // 当前是数组子节点，之前也是数组子节点
                 if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
-                    patchKeyedChildren(c1, c2, container);
+                    patchKeyedChildren(c1, c2, container, parentComponent);
                 }
                 // 没有子节点，卸载数组子节点
                 else {
-                    unmountChildren(c1);
+                    unmountChildren(c1, parentComponent);
                 }
             }
             else {
@@ -122,7 +131,7 @@ export function createRenderer(option) {
     }
 
 
-    const patchKeyedChildren = (c1, c2, container) => {
+    const patchKeyedChildren = (c1, c2, container, parentComponent) => {
         // 首指针
         let i = 0;
         let len = c2.length;
@@ -133,7 +142,7 @@ export function createRenderer(option) {
         while (i <= e1 && i <= e2) {
             const n1 = c1[i];
             const n2 = (c2[i] = normalizeVNode(c2[i]));
-            if (isSameNodeType(n1, n2)) {
+            if (isSameVNodeType(n1, n2)) {
                 patch(n1, n2, container);
             } else {
                 break;
@@ -144,7 +153,7 @@ export function createRenderer(option) {
         while (i <= e2 || i <= e1) {
             const n1 = c1[e1];
             const n2 = (c2[e2] = normalizeVNode(c2[e2]));
-            if (isSameNodeType(n1, n2)) {
+            if (isSameVNodeType(n1, n2)) {
                 patch(n1, n2, container);
             } else {
                 break;
@@ -166,7 +175,7 @@ export function createRenderer(option) {
         else if (i > e2) {
             // 卸载剩余节点
             while (i <= e1) {
-                unmount(c1[i]);
+                unmount(c1[i], parentComponent);
                 i++;
             }
             
@@ -193,7 +202,7 @@ export function createRenderer(option) {
                 const newIndex = keyToNewIndexMap.get(key)
 
                 if (newIndex === undefined) {
-                    unmount(c1[i]);
+                    unmount(c1[i], parentComponent);
                 }
                 else {
                     newIndexToOldIndexMap[newIndex - s2] = i + 1;
@@ -227,9 +236,9 @@ export function createRenderer(option) {
         hostInsert(vnode.el, container, anchor);
     }
 
-    const unmountChildren = (children) => {
+    const unmountChildren = (children, parentComponent) => {
         for (let i = 0; i < children.length; i++) {
-            unmount(children[i]);
+            unmount(children[i], parentComponent);
         }
     };
 
@@ -328,6 +337,10 @@ export function createRenderer(option) {
                 if (m) {
                     queuePostRenderEffect(m);
                 }
+                
+                if (initialVNode.shapeFlag & ShapeFlags.COMPONENT_SHOULD_KEEP_ALIVE) {
+                    instance.a && queuePostRenderEffect(instance.a);
+                }
 
                 instance.isMounted = true;
             }
@@ -374,9 +387,14 @@ export function createRenderer(option) {
         updata();
 
     }
+    
 
     const mountComponent = (initialVNode, container, anchor, parentComponent) => {
         const instance = initialVNode.component = createComponentInstance(initialVNode, parentComponent);
+
+        if (isKeepAlive(initialVNode)) {
+            (instance.ctx as any).renderer = internals;
+        }
 
         setupComponent(instance)
 
@@ -409,7 +427,13 @@ export function createRenderer(option) {
 
     const processComponent = (n1, n2, container, anchor, parentComponent) => {
         if (n1 == null) {
-            mountComponent(n2, container, anchor, parentComponent);
+            if (n2.shapeFlag & ShapeFlags.COMPONENT_KEPT_ALIVE) {
+                parentComponent.ctx.activate(n2, container, anchor);
+            }
+            else {
+                mountComponent(n2, container, anchor, parentComponent);
+            }
+            
         }
         else {
             updateComponent(n1, n2);
@@ -421,8 +445,8 @@ export function createRenderer(option) {
             return;
         }
 
-        if (n1 && !isSameNodeType(n1, n2)) {
-            unmount(n1);
+        if (n1 && !isSameVNodeType(n1, n2)) {
+            unmount(n1, parentComponent);
             n1 = null;
         }
         const {type, ref, shapeFlag} = n2;
@@ -451,7 +475,7 @@ export function createRenderer(option) {
 
         if (vnode == null) {
             if (container._vnode) {
-                unmount(container._vnode);
+                unmount(container._vnode, null);
             }
         }
         else {
@@ -459,6 +483,17 @@ export function createRenderer(option) {
             container._vnode = vnode;
         }
     }
+
+    const internals = {
+        p: patch,
+        um: unmount,
+        m: move,
+        mt: mountComponent,
+        mc: mountChildren,
+        pc: patchChildren,
+        n: getNextHostNode,
+        o: options,
+      }
     return {
         render,
         createApp: createAppAPI(render)

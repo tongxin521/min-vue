@@ -71,3 +71,6 @@ export const isPlainObject = (val: unknown): val is object =>
 
 export const hasChanged = (value: any, oldValue: any): boolean =>
   !Object.is(value, oldValue)
+
+export const isRegExp = (val: unknown): val is RegExp =>
+  toTypeString(val) === '[object RegExp]'

@@ -1,4 +1,3 @@
-import { createRenderer, h } from "@vue/runtime-core";
 import { patchProp } from "./patchProp";
 import { extend, isFunction, isString } from "@vue/shared";
 import { nodeOps } from "./nodeOps";
@@ -10,6 +9,8 @@ import {
     onUpdated,
     onBeforeUnmount,
     onUnmounted,
+    onActivated,
+    onDeactivated,
     provide,
     inject,
     useSlots,
@@ -20,6 +21,12 @@ import {
     watchEffect,
     watchPostEffect,
     watchSyncEffect,
+    cloneVNode,
+    createRenderer,
+    h,
+    mergeProps,
+    isVNode,
+    KeepAlive,
 } from "@vue/runtime-core";
 
 export {
@@ -39,6 +46,12 @@ export {
     watchEffect,
     watchPostEffect,
     watchSyncEffect,
+    cloneVNode,
+    mergeProps,
+    isVNode,
+    KeepAlive,
+    onActivated,
+    onDeactivated,
 }
 
 export {

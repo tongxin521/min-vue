@@ -33,6 +33,8 @@ export function createComponentInstance(vnode, parent) {
         exposed: null,
 
         provides: parent ? parent.provides : Object.create(appContext.provides),
+        components: null,
+        directives: null,
 
         // 自定义 props
         propsOptions: normalizePropsOptions(type, appContext),
@@ -55,6 +57,8 @@ export function createComponentInstance(vnode, parent) {
         c: null,
         bm: null,
         m: null,
+        da: null,
+        a: null,
     }
 
     instance.ctx = {_: instance};
@@ -184,3 +188,10 @@ export function getComponentPublicInstance(instance) {
 
 
 export const getCurrentInstance = () => currentInstance || currentRenderingInstance;
+
+
+export function getComponentName(Component) {
+    return isFunction(Component)
+      ? Component.displayName || Component.name
+      : Component?.name;
+}

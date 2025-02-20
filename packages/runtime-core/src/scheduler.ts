@@ -47,8 +47,8 @@ function flushJobs() {
 
 export function queuePostFlushCb(cb) {
     if (!isArray(cb)) {
-        if (!activePostFlushCbs.length || !activePostFlushCbs.includes(cb)) {
-            activePostFlushCbs.push(cb);
+        if (!activePostFlushCbs || !activePostFlushCbs.length || !activePostFlushCbs.includes(cb)) {
+            pendingPostFlushCbs.push(cb);
         }
     }
     else {

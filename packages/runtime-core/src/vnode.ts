@@ -1,12 +1,35 @@
-import { isArray, isFunction, isObject, isString } from "@vue/shared"
+import { extend, isArray, isFunction, isObject, isOn, isString, normalizeClass, normalizeStyle } from "@vue/shared"
 import { ShapeFlags } from "packages/shared/src/shapeFlags"
 import { currentRenderingInstance } from "./componentRenderContext";
-import { isRef } from "@vue/reactivity";
+import { isProxy, isRef } from "@vue/reactivity";
+import { isInternalObject } from "./internalObject";
 
 export const Text = Symbol.for('v-text');
 export const Fragment = Symbol.for('v-fgt')
 
 export function createVNode(type, props?, children = null) {
+    if (isVNode(type)) {
+        const cloned = cloneVNode(type);
+        if (children) {
+            normalizeChildren(cloned, children);
+        }
+        return cloned;
+    }
+
+    if (props) {
+        props = guardReactiveProps(props);
+        let {class: klass, style } = props;
+        if (klass && !isString(klass)) {
+            props.class = normalizeClass(klass);
+        }
+
+        if (isObject(style)) {
+            if (isProxy(style) && !isArray(style)) {
+                style = extend({}, style);
+            }
+            props.style = normalizeStyle(style);
+        }
+    }
     const shapeFlag = isString(type)
         ? ShapeFlags.ELEMENT
         : isObject(type)
@@ -31,14 +54,19 @@ export function createVNode(type, props?, children = null) {
         shapeFlag,
         // 组件实例
         component: null,
+        appContext: null,
         // 当前渲染的组件实例
         ctx: currentRenderingInstance,
-        appContext: null,
     }
 
     normalizeChildren(vnode, children);
 
     return vnode
+}
+
+export const guardReactiveProps = (props) => {
+    if (!props) return null;
+    return isProxy(props) || isInternalObject(props) ? extend({}, props) : props;
 }
 
 
@@ -84,7 +112,7 @@ function normalizeChildren(vnode, children) {
         vnode.shapeFlag |= type;
 }
 
-export function isSameNodeType(n1, n2) {
+export function isSameVNodeType(n1, n2) {
     return n1.type === n2.type && n1.key === n2.key;
 }
 
@@ -124,4 +152,66 @@ function normalizeRef({ref, ref_key, ref_for}) {
         { i: currentRenderingInstance, r: ref, k: ref_key, f: !!ref_for }
         : ref
         : null);
+}
+
+
+export function cloneVNode(vnode, extraProps?, mergeRef = false) {
+    const {props, ref, children} = vnode;
+    const mergedProps = extraProps ? mergeProps(props, extraProps) : props;
+
+    const cloned = {
+        ____v_isVNode: true,
+        type: vnode.type,
+        props: mergedProps,
+        key: mergedProps && normalizeKey(mergedProps),
+        ref: extraProps && extraProps.ref
+        ? mergeRef && ref
+          ? isArray(ref)
+            ? ref.concat(normalizeRef(extraProps)!)
+            : [ref, normalizeRef(extraProps)!]
+          : normalizeRef(extraProps)
+        : ref,
+        children,
+        shapeFlag: vnode.shapeFlag,
+        component: vnode.component,
+        appContext: vnode.appContext,
+        el: vnode.el,
+        ctx: vnode.ctx,
+    }
+
+    return cloned;
+}
+
+export function mergeProps(...args) {
+    const ret: any = {};
+    for (let i = 0; i < args.length; i++) {
+        const toMerge = args[i];
+        for (const key in toMerge) {
+            if (key === 'class') {
+                if (ret.class !== toMerge.class) {
+                    ret.class = normalizeClass([ret.class, toMerge.class])
+                }
+            } else if (key === 'style') {
+                ret.style = normalizeStyle([ret.style, toMerge.style]);
+            }
+            else if (isOn(key)) {
+                const existing = ret[key];
+                const incoming = toMerge[key];
+
+                if (
+                    incoming && existing !== incoming
+                    && !(isArray(existing) && existing.includes(incoming))
+                ) {
+                    ret[key] = existing
+                        ? [].concat(existing as any, incoming as any)
+                        : incoming
+                }
+
+            }
+            else if (key !== '') {
+                ret[key] = toMerge[key]
+            }
+        }
+    }
+    return ret;
 }

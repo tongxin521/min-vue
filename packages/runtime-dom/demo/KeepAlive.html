@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+        import {render, h , KeepAlive, ref, onActivated, onDeactivated} from './../dist/runtime-dom.js';
+        // import {render, h , KeepAlive, ref, onActivated, onDeactivated} from '/node_modules/vue/dist/vue.runtime.esm-browser.js';
+        const A = {
+            setup() {
+                onActivated(() => {
+                    console.log('A activated');
+                });
+                onDeactivated(() => {
+                    console.log('A deactivated');
+                });
+                return () => {
+                    return h('div', {}, 'A')
+                }
+            }
+        }
+        const B = {
+            setup() {
+                onActivated(() => {
+                    console.log('B activated');
+                });
+                onDeactivated(() => {
+                    console.log('B deactivated');
+                });
+                return () => {
+                    
+                    return h('div', {}, 'B')
+                }
+            }
+        }
+        const App = {
+            setup() {
+                const flag = ref(true);
+                function toggle() {
+                    if (flag.value) {
+                        return h(A)
+                    }
+                    else {
+                        return h(B)
+                    }
+                }
+                return () => {
+                    return h('div', null, [
+                        h(KeepAlive, {}, {
+                            default: toggle
+                        }),
+                        h('button', {onClick: () => {flag.value = !flag.value}}, 'click me')
+                    ])
+                }
+            }
+        }
+        render(h(App), app);
+
+        // setTimeout(() => {
+        //     render(null, app);
+        // }, 1000)
+    </script>
+</body>
+</html>
