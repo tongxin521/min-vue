@@ -1,3 +1,4 @@
+import { isString } from ".";
 import { makeMap } from "./makeMap";
 
 export const isOn = (key) => key.charCodeAt(0) === 111 /* o */ &&
@@ -74,3 +75,8 @@ export const hasChanged = (value: any, oldValue: any): boolean =>
 
 export const isRegExp = (val: unknown): val is RegExp =>
   toTypeString(val) === '[object RegExp]'
+
+export const toNumber = (val: any): any => {
+  const n = isString(val) ? Number(val) : NaN
+  return isNaN(n) ? val : n
+}
