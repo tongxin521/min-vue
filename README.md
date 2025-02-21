@@ -74,4 +74,6 @@ TODO: 待完成...
 3. getCurrentScope
 4. onScopeDispose
 5. directive
+6. Transition
+7. TransitionGroup
 
